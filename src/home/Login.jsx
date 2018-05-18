@@ -1,6 +1,7 @@
 import React from 'react'
-import swal from 'sweetalert2'
 import { Redirect, Link } from 'react-router-dom'
+import createHistory from 'history/createBrowserHistory'
+import Swal from 'sweetalert2'
 import Header from '../components/Header'
 
 class Login extends React.Component {
@@ -17,16 +18,17 @@ class Login extends React.Component {
     });
   }
 
-  onSubmit = () => {
+  onSubmit = (event) => {
+    event.preventDefault();
     if (this.state.email == "admin@tanijoy.id" && this.state.password == "password") {
-      alert('Welcome '+this.state.email);
-      // swal("Welcome "+this.state.email, "Enjoy the website", "success");
+      Swal("Welcome "+this.state.email, "Enjoy the website", "success").then((value) => {
+        this.props.history.push('/dashboard');
+      });
       this.setState({
         toDashboard: true
       });
     }else{
-      // swal("Upsss", "Wrong email or password", "error");
-      alert('Error, wrong email or password');
+      Swal("Upsss", "Wrong email or password", "error");
       this.setState({
         email: '',
         password: '',
@@ -36,9 +38,6 @@ class Login extends React.Component {
   }
 
   render () {
-    if (this.state.toDashboard === true) {
-      return <Redirect to='/dashboard' />
-    }
     return (
       <div>
         <Header></Header>
@@ -62,7 +61,7 @@ class Login extends React.Component {
                     </fieldset>
                     <Link to="/register">Create new account here</Link>
                     <br></br>
-                    <button type="submit" className="btn btn-primary">Submit</button>
+                    <button className="btn btn-primary">Submit</button>
                   </form>
                 </div>
               </div>
