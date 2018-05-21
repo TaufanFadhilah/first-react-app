@@ -1,16 +1,48 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import axios from 'axios'
+import swal from 'sweetalert2'
 import CreateLand from './CreateLand'
 import EditLand from './EditLand'
 class Land extends React.Component {
-  state = {
-    lands : [
-      {id: 1, name: 'Bogor', area: 120, doc: ''},
-      {id: 2, name: 'Malang', area: 140, doc: ''},
-      {id: 3, name: 'Bandung', area: 20, doc: ''},
-    ]
+
+  componentWillMount(){
+    axios.get('http://localhost:3001/land')
+      .then(res => {
+        // this.state = {
+        //   lands: res.data.data
+        // };
+        this.setState({
+          lands: res.data.data
+        });
+        console.log(this.state);
+        console.log("Mount");
+      })
+      .catch(res => {
+        alert("Something error");
+        console.log(res);
+      });
   }
+
+  onDelete = (land) => {
+    // let id = land.id;
+    let data = {
+      id: land.id
+    }
+    axios.post('http://localhost:3001/deleteLand',data)
+      .then(res => {
+        swal("Success", land.name + " deleted!", "success");
+      })
+      .catch(res => {
+        swal("Error", "Somethings wrong", "error");
+      });
+  }
+
   render () {
+    if (!this.state) {
+          return (
+              <div>Loading...</div>
+          );
+      }
     return (
       <div className="container">
         <div className="row">
@@ -46,7 +78,7 @@ class Land extends React.Component {
                         </td>
                         <td><EditLand land={land}></EditLand></td>
                         <td>
-                          <button className="btn btn-danger">Delete</button>
+                          <button className="btn btn-danger" onClick={this.onDelete.bind(this, land)}>Delete</button>
                         </td>
                       </tr>
                     )

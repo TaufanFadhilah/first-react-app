@@ -1,16 +1,36 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import axios from 'axios'
+import swal from 'sweetalert2'
 
 class EditLand extends React.Component {
   constructor(props){
       super(props);
-      console.log(props.land);
+  }
+
+  onSubmit = (event) => {
+    event.persist()
+    event.preventDefault();
+
+    var formData = new FormData();
+    formData.append('id', this.props.land.id);
+    formData.append('name', event.target.name.value);
+    formData.append('area', event.target.area.value);
+    formData.append('doc', event.target.doc.files[0]);
+
+    axios.post('http://localhost:3001/updateLand', formData)
+      .then(res => {
+        swal("Success", event.target.name.value + " updated!", "success");
+        document.getElementById("#"+this.props.land.id).click();
+      })
+      .catch(res => {
+        swal("Upsss", "Something wrongs", "error");
+      });
   }
 
   render () {
     return (
       <div>
-        <button type="button" className="btn btn-warning mr-2" data-toggle="modal" data-target={"#"+this.props.land.id}>
+        <button id={"#"+this.props.land.id} type="button" className="btn btn-warning mr-2" data-toggle="modal" data-target={"#"+this.props.land.id}>
           Edit
         </button>
 
@@ -24,26 +44,26 @@ class EditLand extends React.Component {
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
+              <form onSubmit={this.onSubmit.bind(this)}>
               <div className="modal-body">
-                <form>
                   <fieldset className="form-group">
                     <label htmlFor="exampleInputEmail1">Name</label>
-                    <input type="text" className="form-control" placeholder="Enter name" value={this.props.land.name} />
+                    <input type="text" name="name" className="form-control" placeholder="Enter name" defaultValue={this.props.land.name} />
                   </fieldset>
                   <fieldset className="form-group">
                     <label htmlFor="exampleInputEmail1">Area</label>
-                    <input type="number" className="form-control" placeholder="Enter area" value={this.props.land.area} />
+                    <input type="number" name="area" className="form-control" placeholder="Enter area" defaultValue={this.props.land.area} />
                   </fieldset>
                   <fieldset className="form-group">
                     <label htmlFor="exampleInputEmail1">Document</label>
-                    <input type="file" className="form-control" placeholder="Enter document" />
+                    <input type="file" name="doc" className="form-control" placeholder="Enter document" />
                   </fieldset>
-                </form>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-warning">Save changes</button>
+                <button type="submit" className="btn btn-warning">Save changes</button>
               </div>
+              </form>
             </div>
           </div>
         </div>
