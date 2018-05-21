@@ -6,6 +6,10 @@ import Header from '../components/Header'
 
 class Login extends React.Component {
 
+  state = {
+    user: ''
+  }
+
   doLogin = (event) => {
     event.preventDefault();
     let user = {
@@ -15,8 +19,11 @@ class Login extends React.Component {
     axios.post('http://localhost:3001/login', user)
     .then(res => {
       let name = res.data['data'][0].name;
+      this.setState({
+        user: res.data['data'][0]
+      });
       Swal("Login Success", "Welcome " + name + ", please enjoy the apps", "success").then((value) => {
-        this.props.history.push('/dashboard');
+        this.props.history.push('/dashboard', {user : this.state.user});
       });
     })
     .catch(res => {
